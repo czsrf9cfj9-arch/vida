@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Vida">
+<meta name="theme-color" content="#0a0a0a">
+<title>Vida</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --line: #242424;
+    --text: #ededed;
+    --muted: #7a7a7a;
+    --accent: #e6e6e6;
+    --warn: #c9a227;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { min-height: 100dvh; padding-bottom: calc(72px + env(safe-area-inset-bottom)); padding-top: env(safe-area-inset-top); }
+  header { padding: 20px 20px 8px; font-size: 13px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  main { padding: 0 16px 24px; }
+  h2 { font-size: 22px; font-weight: 600; margin: 8px 0 16px; text-transform: capitalize; }
+  h3 { font-size: 13px; color: var(--muted); font-weight: 500; margin: 22px 0 8px; text-transform: uppercase; letter-spacing: .06em; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 8px; display: flex; gap: 12px; align-items: flex-start; }
+  .card.small { padding: 10px 12px; }
+  .card.small .title { font-size: 14px; }
+  .card.small .meta { font-size: 11px; }
+  .card .main { flex: 1; min-width: 0; }
+  .card .title { font-size: 15px; word-break: break-word; }
+  .card .meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .big { font-size: 28px; font-weight: 600; }
+  .warn { color: var(--warn); font-size: 12px; margin-top: 6px; }
+  .btn { background: none; border: 1px solid var(--line); color: var(--text); border-radius: 999px; padding: 8px 14px; font-size: 14px; cursor: pointer; }
+  .btn.primary { background: var(--accent); color: #0a0a0a; border-color: var(--accent); }
+  .icon-btn { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 2px 6px; }
+  .state { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--muted); background: none; cursor: pointer; white-space: nowrap; }
+  .state.em-curso { color: var(--text); border-color: #444; }
+  .state.concluido { color: #6b6b6b; text-decoration: line-through; }
+  .days { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 12px; scrollbar-width: none; }
+  .days::-webkit-scrollbar { display: none; }
+  .day { flex: 0 0 auto; width: 46px; padding: 8px 0; text-align: center; border-radius: 10px; border: 1px solid var(--line); background: none; color: var(--text); cursor: pointer; font-size: 12px; }
+  .day small { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; }
+  .day b { display: block; font-size: 16px; font-weight: 500; margin-top: 2px; }
+  .day.sel { background: var(--accent); color: #0a0a0a; border-color: var(--accent); }
+  .day.sel small { color: #555; }
+  form { display: grid; gap: 10px; margin-bottom: 20px; }
+  input, select, textarea { width: 100%; background: var(--surface); border: 1px solid var(--line); color: var(--text); border-radius: 10px; padding: 12px; font-size: 16px; font-family: inherit; }
+  textarea { resize: vertical; min-height: 70px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row.cat { grid-template-columns: 1fr 1fr; }
+  label { font-size: 12px; color: var(--muted); display: grid; gap: 6px; }
+  .empty { color: var(--muted); font-size: 14px; padding: 16px 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .chip { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--muted); }
+  nav.tabs { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,10,.92); backdrop-filter: blur(12px); border-top: 1px solid var(--line); display: flex; padding-bottom: env(safe-area-inset-bottom); }
+  nav.tabs button { flex: 1; background: none; border: none; color: var(--muted); padding: 12px 0; font-size: 11px; cursor: pointer; }
+  nav.tabs button.on { color: var(--text); }
+  .subtabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .subtabs .btn { flex: 1; }
+  .upload { display: block; text-align: center; cursor: pointer; margin-bottom: 12px; }
+  .upload input { display: none; }
+  .totais { margin-bottom: 12px; }
+  .stat { display: flex; justify-content: space-between; gap: 12px; }
+  .stat .meta { margin-top: 0; text-align: right; }
+  #scanner { margin-bottom: 12px; border-radius: var(--radius); overflow: hidden; }
+  .hidden { display: none !important; }
+</style>
+<style id="liquid-glass">
+  /* Estilo "Liquid Glass" aproximado com CSS: vidro translúcido, desfoque e reflexos */
+  :root {
+    --bg: #070709;
+    --glass: rgba(255,255,255,.08);
+    --glass-strong: rgba(255,255,255,.16);
+    --glass-line: rgba(255,255,255,.14);
+    --text: #f5f5f7;
+    --muted: rgba(235,235,245,.6);
+    --accent: #0a84ff;
+    --warn: #ffd60a;
+    --radius: 22px;
+  }
+  html { background: var(--bg); }
+  body { background: transparent; position: relative; }
+  body::before {
+    content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(40% 35% at 18% 14%, rgba(10,132,255,.5), transparent 70%),
+      radial-gradient(38% 32% at 86% 30%, rgba(191,90,242,.38), transparent 70%),
+      radial-gradient(45% 40% at 50% 92%, rgba(255,159,10,.25), transparent 70%);
+    filter: blur(30px);
+  }
+  header { font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .12em; padding: 22px 22px 0; }
+  main { padding: 0 16px 130px; }
+  h2 { font-size: 34px; font-weight: 700; letter-spacing: -.025em; margin: 6px 0 18px; text-transform: none; line-height: 1.1; }
+  h3 { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: 0; text-transform: none; margin: 26px 6px 10px; }
+
+  .card {
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    border-radius: var(--radius);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 10px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .card.small { padding: 12px 14px; border-radius: 18px; }
+  .card .title { font-size: 16px; font-weight: 500; }
+  .card.small .title { font-size: 15px; }
+  .card .meta { color: var(--muted); }
+  .big { font-weight: 700; }
+  .warn { color: var(--warn); }
+  .empty { color: var(--muted); }
+
+  .btn {
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    color: var(--text);
+    border-radius: 999px;
+    padding: 11px 18px;
+    font-weight: 500;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+  .btn.primary {
+    background: var(--accent);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 6px 18px rgba(10,132,255,.4), inset 0 1px 0 rgba(255,255,255,.3);
+  }
+  .icon-btn { color: var(--muted); font-size: 20px; }
+
+  input, select, textarea {
+    background: rgba(255,255,255,.07);
+    border: 1px solid var(--glass-line);
+    border-radius: 16px;
+    color: var(--text);
+    padding: 14px 16px;
+  }
+  input::placeholder, textarea::placeholder { color: rgba(235,235,245,.38); }
+  form { gap: 12px; }
+
+  .subtabs {
+    background: rgba(255,255,255,.07);
+    border: 1px solid var(--glass-line);
+    border-radius: 999px;
+    padding: 4px;
+    gap: 4px;
+  }
+  .subtabs .btn { border: none; background: none; box-shadow: none; padding: 9px 10px; color: var(--muted); }
+  .subtabs .btn.primary { background: rgba(255,255,255,.18); color: var(--text); box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
+
+  .days { gap: 8px; }
+  .day {
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    border-radius: 18px;
+    width: 52px;
+    padding: 10px 0;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+  .day small { color: var(--muted); }
+  .day.sel { background: #f5f5f7; color: #000; border-color: transparent; box-shadow: 0 6px 16px rgba(255,255,255,.2); }
+  .day.sel small { color: #666; }
+
+  .state {
+    background: rgba(255,255,255,.08);
+    border: 1px solid var(--glass-line);
+    border-radius: 999px;
+    color: var(--muted);
+    padding: 6px 12px;
+  }
+  .state.em-curso { color: var(--text); background: rgba(10,132,255,.22); border-color: rgba(10,132,255,.35); }
+  .state.concluido { color: var(--muted); background: rgba(48,209,88,.18); border-color: rgba(48,209,88,.3); text-decoration: none; }
+  .chip { background: rgba(255,255,255,.08); border-color: var(--glass-line); border-radius: 999px; }
+
+  nav.tabs {
+    left: 14px; right: 14px;
+    bottom: calc(12px + env(safe-area-inset-bottom));
+    border: 1px solid var(--glass-line);
+    border-radius: 30px;
+    padding: 6px;
+    background: rgba(28,28,32,.5);
+    -webkit-backdrop-filter: blur(30px) saturate(190%);
+    backdrop-filter: blur(30px) saturate(190%);
+    box-shadow: 0 14px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.16);
+  }
+  nav.tabs button { border-radius: 22px; padding: 9px 0 8px; font-size: 10px; font-weight: 600; color: var(--muted); }
+  nav.tabs button.on { color: #fff; background: rgba(255,255,255,.16); box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
+
+  #scanner { border-radius: 22px; }
+  .totais { margin-bottom: 14px; }
+</style>
+</head>
+<body>
+<header>Vida</header>
+<main>
+
+  <!-- HOJE -->
+  <section id="v-hoje">
+    <h2 id="hoje-titulo"></h2>
+
+    <h3>Agenda de hoje</h3>
+    <div id="hoje-agenda"></div>
+
+    <h3>Próximos dias</h3>
+    <div id="hoje-prox"></div>
+
+    <h3>Projetos pendentes</h3>
+    <div id="hoje-proj"></div>
+
+    <h3>Saúde</h3>
+    <div id="hoje-saude"></div>
+
+    <h3>Importar calendário</h3>
+    <div class="row cat">
+      <select id="ics-origem">
+        <option value="google">Google Calendar</option>
+        <option value="iphone">iPhone / iCloud</option>
+      </select>
+      <label class="btn primary upload" style="margin:0">Escolher .ics
+        <input type="file" accept=".ics,text/calendar" id="ics-file">
+      </label>
+    </div>
+    <p class="empty" style="padding-top:8px">Substitui os eventos anteriores dessa origem. Eventos que se repetem (diários, semanais) entram só uma vez.</p>
+    <p id="ics-status" class="warn"></p>
+  </section>
+
+  <!-- AGENDA -->
+  <section id="v-agenda" class="hidden">
+    <h2 id="dia-titulo"></h2>
+    <div class="days" id="dias"></div>
+    <form id="f-comp">
+      <input name="titulo" placeholder="Compromisso" required>
+      <div class="row">
+        <label>Início <input type="time" name="inicio" required></label>
+        <label>Fim <input type="time" name="fim" required></label>
+      </div>
+      <div class="row cat">
+        <select name="categoria" id="sel-cat-comp"></select>
+        <select name="sub" id="sel-sub-comp"></select>
+      </div>
+      <button class="btn primary" type="submit">Adicionar</button>
+    </form>
+    <div id="lista-comp"></div>
+  </section>
+
+  <!-- PROJETOS -->
+  <section id="v-projetos" class="hidden">
+    <h2>Projetos</h2>
+    <form id="f-proj">
+      <input name="titulo" placeholder="Nome do projeto" required>
+      <div class="row cat">
+        <select name="categoria" class="sel-cat"></select>
+        <select name="sub" class="sel-sub"></select>
+      </div>
+      <button class="btn primary" type="submit">Adicionar</button>
+    </form>
+    <div id="lista-proj"></div>
+  </section>
+
+  <!-- IDEIAS -->
+  <section id="v-ideias" class="hidden">
+    <h2>Ideias</h2>
+    <form id="f-ideia">
+      <textarea name="texto" placeholder="Escreve a ideia" required></textarea>
+      <div class="row cat">
+        <select name="categoria" class="sel-cat"></select>
+        <select name="sub" class="sel-sub"></select>
+      </div>
+      <button class="btn primary" type="submit">Guardar ideia</button>
+    </form>
+    <div id="lista-ideias"></div>
+  </section>
+
+  <!-- SAÚDE -->
+  <section id="v-saude" class="hidden">
+    <h2 id="saude-dia"></h2>
+    <div class="days" id="dias-saude"></div>
+    <div class="subtabs">
+      <button class="btn primary" data-sub="treinos">Treinos</button>
+      <button class="btn" data-sub="nutricao">Nutrição</button>
+      <button class="btn" data-sub="objetivos">Objetivos</button>
+    </div>
+
+    <div id="s-treinos">
+      <label class="btn primary upload">Ler screenshot do treino
+        <input type="file" accept="image/*" id="img-treino">
+      </label>
+      <form id="f-treino">
+        <input name="nome" placeholder="Nome do treino (opcional)">
+        <input name="duracao" type="number" min="0" placeholder="Duração (min)">
+        <textarea name="notas" placeholder="Notas ou texto lido da screenshot"></textarea>
+        <button class="btn" type="submit">Guardar treino</button>
+      </form>
+      <div id="lista-treinos"></div>
+    </div>
+
+    <div id="s-nutricao" class="hidden">
+      <button class="btn primary upload" id="btn-scan" type="button">Ler código de barras</button>
+      <div id="scanner" class="hidden"></div>
+      <form id="f-busca">
+        <input name="codigo" inputmode="numeric" placeholder="Ou escreve o código de barras">
+        <input name="gramas" type="number" min="1" value="100" placeholder="Quantidade (g)">
+        <button class="btn" type="submit">Procurar produto</button>
+      </form>
+      <form id="f-comida">
+        <input name="nome" placeholder="Alimento" required>
+        <div class="row">
+          <input name="kcal" type="number" min="0" placeholder="kcal">
+          <input name="porcao" placeholder="Porção (ex.: 150 g)">
+        </div>
+        <div class="row">
+          <input name="proteina_g" type="number" min="0" placeholder="Proteína (g)">
+          <input name="hidratos_g" type="number" min="0" placeholder="Hidratos (g)">
+        </div>
+        <input name="gordura_g" type="number" min="0" placeholder="Gordura (g)">
+        <button class="btn" type="submit">Adicionar à refeição</button>
+      </form>
+      <p class="empty">Funciona com produtos embalados, através da base de dados gratuita Open Food Facts. Pratos caseiros introduz à mão.</p>
+      <div class="totais" id="totais"></div>
+      <div id="lista-comida"></div>
+    </div>
+
+    <div id="s-objetivos" class="hidden">
+      <form id="f-perfil">
+        <div class="row">
+          <select name="sexo">
+            <option value="M">Masculino</option>
+            <option value="F">Feminino</option>
+          </select>
+          <input name="idade" type="number" min="10" max="100" placeholder="Idade" required>
+        </div>
+        <div class="row">
+          <input name="altura" type="number" min="100" max="250" placeholder="Altura (cm)" required>
+          <input name="peso" type="number" min="30" max="300" step="0.1" placeholder="Peso (kg)" required>
+        </div>
+        <select name="atividade">
+          <option value="1.2">Pouco ou nenhum exercício</option>
+          <option value="1.375">Treino 1–3 vezes por semana</option>
+          <option value="1.55" selected>Treino 3–5 vezes por semana</option>
+          <option value="1.725">Treino 6–7 vezes por semana</option>
+        </select>
+        <select name="objetivo">
+          <option value="perder">Perder peso (−500 kcal/dia)</option>
+          <option value="manter" selected>Manter peso</option>
+          <option value="ganhar">Ganhar massa (+300 kcal/dia)</option>
+        </select>
+        <div class="row">
+          <input name="proteina_kg" type="number" min="1" max="3" step="0.1" placeholder="Proteína (g por kg)" value="2">
+          <input name="gordura_pct" type="number" min="15" max="40" placeholder="Gordura (% das kcal)" value="25">
+        </div>
+        <button class="btn primary" type="submit">Calcular e guardar</button>
+      </form>
+      <div id="perfil-resumo"></div>
+      <p class="empty">Cálculo pela fórmula de Mifflin-St Jeor. São estimativas: ajusta ao que vires na prática ao fim de duas a três semanas.</p>
+    </div>
+
+    <p id="estado-ai" class="warn"></p>
+  </section>
+
+  <!-- CATEGORIAS -->
+  <section id="v-cats" class="hidden">
+    <h2>Categorias</h2>
+    <div id="lista-cats"></div>
+    <form id="f-cat" style="margin-top:20px">
+      <input name="nome" placeholder="Nova categoria (ex.: Saúde)" required>
+      <button class="btn primary" type="submit">Criar categoria</button>
+    </form>
+  </section>
+
+</main>
+
+<nav class="tabs">
+  <button data-v="hoje" class="on">Hoje</button>
+  <button data-v="agenda">Agenda</button>
+  <button data-v="projetos">Projetos</button>
+  <button data-v="ideias">Ideias</button>
+  <button data-v="saude">Saúde</button>
+  <button data-v="cats">Categorias</button>
+</nav>
+
+<script>
+const KEY = "vida-v1";
+const DIAS = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const ESTADOS = ["a fazer","em curso","concluído"];
+
+const estado = JSON.parse(localStorage.getItem(KEY) || "null") || {
+  categorias: [
+    { nome: "Trabalho", subs: [] },
+    { nome: "Pessoal", subs: [] }
+  ],
+  compromissos: [],
+  projetos: [],
+  ideias: [],
+  saude: { treinos: [], refeicoes: [] },
+  eventos: [],
+  perfil: null
+};
+estado.saude ||= { treinos: [], refeicoes: [] };
+estado.eventos ||= [];
+let diaSel = hoje();
+const guardar = () => localStorage.setItem(KEY, JSON.stringify(estado));
+const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+function hoje() { const d = new Date(); return iso(d); }
+function iso(d) { const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return z.toISOString().slice(0, 10); }
+function addDias(s, n) { const d = new Date(s + "T12:00:00"); d.setDate(d.getDate() + n); return iso(d); }
+function fmtDataLonga(s) {
+  const d = new Date(s + "T12:00:00");
+  return d.toLocaleDateString("pt-PT", { weekday: "long", day: "numeric", month: "long" });
+}
+function inicioSemana(s) { const d = new Date(s + "T12:00:00"); return addDias(s, -((d.getDay() + 6) % 7)); }
+function esc(t) { const e = document.createElement("div"); e.textContent = t; return e.innerHTML; }
+
+// ----- Categorias -----
+function opcoesCat(sel) {
+  sel.innerHTML = estado.categorias.map((c, i) => `<option value="${i}">${esc(c.nome)}</option>`).join("");
+}
+function atualizaSubs(catSel, subSel) {
+  const c = estado.categorias[catSel.value];
+  const subs = c ? c.subs : [];
+  subSel.innerHTML = `<option value="">Sem subcategoria</option>` + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+}
+function ligaCatSub(form) {
+  const cat = form.querySelector(".sel-cat") || form.querySelector('[name="categoria"]');
+  const sub = form.querySelector(".sel-sub") || form.querySelector('[name="sub"]');
+  cat.addEventListener("change", () => atualizaSubs(cat, sub));
+}
+function refreshSelects() {
+  document.querySelectorAll(".sel-cat, #sel-cat-comp").forEach(s => {
+    const v = s.value; opcoesCat(s); if (v) s.value = v;
+  });
+  document.querySelectorAll(".sel-sub, #sel-sub-comp").forEach(s => {
+    const cat = s.closest("form").querySelector(".sel-cat, #sel-cat-comp");
+    atualizaSubs(cat, s);
+  });
+}
+
+// ----- Eventos do dia (compromissos + calendários importados) -----
+function eventosDoDia(d) {
+  const comp = estado.compromissos.filter(c => c.data === d).map(c => ({
+    key: "c" + c.id, id: c.id, tipo: "comp", titulo: c.titulo,
+    inicio: c.inicio, fim: c.fim,
+    meta: (estado.categorias[c.catIdx]?.nome || "") + (c.sub ? " · " + c.sub : "")
+  }));
+  const ev = estado.eventos.filter(e => e.data === d).map(e => ({
+    key: "e" + e.id, id: e.id, tipo: "ev", titulo: e.titulo,
+    inicio: e.inicio || "00:00", fim: e.fim || "23:59", dia: !e.inicio,
+    meta: (e.origem === "google" ? "Google Calendar" : "iPhone") + (e.inicio ? "" : " · dia inteiro")
+  }));
+  return [...comp, ...ev].sort((a, b) => a.inicio.localeCompare(b.inicio));
+}
+
+function renderLista(items, editavel, pequeno) {
+  if (!items.length) return `<p class="empty">Sem eventos.</p>`;
+  return items.map(it => {
+    const conf = items.filter(o => o.key !== it.key && !o.dia && !it.dia && o.inicio < it.fim && it.inicio < o.fim);
+    const aviso = conf.length ? `<div class="warn">Sobrepõe-se a: ${conf.map(o => esc(o.titulo)).join(", ")}</div>` : "";
+    const hora = it.dia ? "" : `${it.inicio} – ${it.fim} · `;
+    const del = editavel && it.tipo === "comp" ? `<button class="icon-btn" data-del-comp="${it.id}" aria-label="Apagar">×</button>` : "";
+    return `<div class="card ${pequeno ? "small" : ""}"><div class="main">
+      <div class="title">${esc(it.titulo)}</div>
+      <div class="meta">${hora}${esc(it.meta)}</div>
+      ${aviso}
+    </div>${del}</div>`;
+  }).join("");
+}
+
+// ----- Importar .ics -----
+function parseDT(chave, valor) {
+  if (/VALUE=DATE(?!-TIME)/.test(chave) || /^\d{8}$/.test(valor)) {
+    const m = /^(\d{4})(\d{2})(\d{2})/.exec(valor);
+    return m ? { data: `${m[1]}-${m[2]}-${m[3]}`, hora: null } : null;
+  }
+  const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})(Z)?/.exec(valor);
+  if (!m) return null;
+  if (m[7] === "Z") {
+    const d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]));
+    const hh = String(d.getHours()).padStart(2, "0"), mm = String(d.getMinutes()).padStart(2, "0");
+    return { data: iso(d), hora: `${hh}:${mm}` };
+  }
+  return { data: `${m[1]}-${m[2]}-${m[3]}`, hora: `${m[4]}:${m[5]}` };
+}
+
+function parseICS(texto) {
+  const linhas = texto.replace(/\r/g, "").replace(/\n[ \t]/g, "").split("\n");
+  const eventos = [];
+  let cur = null;
+  for (const l of linhas) {
+    if (l === "BEGIN:VEVENT") { cur = {}; continue; }
+    if (l === "END:VEVENT") { if (cur) eventos.push(cur); cur = null; continue; }
+    if (!cur) continue;
+    const i = l.indexOf(":"); if (i < 0) continue;
+    const chave = l.slice(0, i), valor = l.slice(i + 1);
+    const nome = chave.split(";")[0];
+    if (nome === "DTSTART" || nome === "DTEND") cur[nome] = parseDT(chave, valor);
+    if (nome === "SUMMARY") cur.titulo = valor.replace(/\\n/g, " ").replace(/\\,/g, ",").replace(/\\;/g, ";");
+  }
+  const limite = addDias(hoje(), -30);
+  return eventos
+    .filter(e => e.DTSTART && e.DTSTART.data >= limite)
+    .map(e => ({
+      titulo: e.titulo || "(sem título)",
+      data: e.DTSTART.data,
+      inicio: e.DTSTART.hora,
+      fim: e.DTEND?.hora || null
+    }));
+}
+
+document.getElementById("ics-file").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  const origem = document.getElementById("ics-origem").value;
+  const nomeOrigem = origem === "google" ? "Google Calendar" : "iPhone";
+  const status = document.getElementById("ics-status");
+  try {
+    const novos = parseICS(await f.text()).map(x => ({ ...x, id: id(), origem }));
+    const limite = addDias(hoje(), -30);
+    estado.eventos = estado.eventos.filter(x => x.origem !== origem && x.data >= limite).concat(novos);
+    status.textContent = `${novos.length} eventos importados de ${nomeOrigem}.`;
+  } catch (err) { status.textContent = "Não consegui ler o ficheiro: " + err.message; }
+  e.target.value = "";
+  renderTudo();
+};
+
+// ----- Agenda -----
+function renderDias() {
+  let html = "";
+  for (let i = -3; i <= 3; i++) {
+    const d = addDias(diaSel, i);
+    const dt = new Date(d + "T12:00:00");
+    html += `<button class="day ${d === diaSel ? "sel" : ""}" data-d="${d}">
+      <small>${DIAS[dt.getDay()]}</small><b>${dt.getDate()}</b></button>`;
+  }
+  document.querySelectorAll(".days").forEach(el => el.innerHTML = html);
+  document.getElementById("dia-titulo").textContent = fmtDataLonga(diaSel);
+}
+function renderAgenda() {
+  renderDias();
+  document.getElementById("lista-comp").innerHTML = renderLista(eventosDoDia(diaSel), true, false);
+}
+
+// ----- Hoje -----
+function renderHoje() {
+  const h = hoje();
+  document.getElementById("hoje-titulo").textContent = fmtDataLonga(h);
+  document.getElementById("hoje-agenda").innerHTML = renderLista(eventosDoDia(h), false, false);
+
+  document.getElementById("hoje-prox").innerHTML = [1, 2].map(n => {
+    const d = addDias(h, n);
+    return `<h3>${fmtDataLonga(d)}</h3>${renderLista(eventosDoDia(d), false, true)}`;
+  }).join("");
+
+  const pendentes = estado.projetos.filter(p => p.estado !== "concluído");
+  document.getElementById("hoje-proj").innerHTML = pendentes.length
+    ? pendentes.slice(0, 8).map(p => `<div class="card small"><div class="main">
+        <div class="title">${esc(p.titulo)}</div>
+        <div class="meta">${esc(estado.categorias[p.catIdx]?.nome || "Sem categoria")}${p.sub ? " · " + esc(p.sub) : ""}</div>
+      </div><button class="state ${p.estado.replace(" ", "-")}" data-estado="${p.id}">${p.estado}</button></div>`).join("")
+      + (pendentes.length > 8 ? `<p class="empty">+ ${pendentes.length - 8} na secção Projetos</p>` : "")
+    : `<p class="empty">Sem projetos pendentes.</p>`;
+
+  const ini = inicioSemana(h), fim = addDias(ini, 6);
+  const treinosSemana = estado.saude.treinos.filter(t => t.data >= ini && t.data <= fim).length;
+  const faltam = Math.max(0, 6 - treinosSemana);
+
+  let saude = `<div class="card small"><div class="main stat">
+      <div class="title">Treinos esta semana</div>
+      <div class="meta"><span class="big" style="font-size:20px">${treinosSemana}/6</span><br>${faltam ? `faltam ${faltam}` : "meta cumprida"}</div>
+    </div></div>`;
+
+  const m = estado.perfil?.metas;
+  if (m) {
+    const ref = estado.saude.refeicoes.filter(r => r.data === h);
+    const soma = k => ref.reduce((s, r) => s + (+r[k] || 0), 0);
+    const restaKcal = Math.round(m.kcal - soma("kcal"));
+    const restaP = Math.round(m.proteina - soma("proteina_g"));
+    const restaH = Math.round(m.hidratos - soma("hidratos_g"));
+    const restaG = Math.round(m.gordura - soma("gordura_g"));
+    saude += `<div class="card small"><div class="main stat">
+        <div class="title">Calorias por atingir</div>
+        <div class="meta"><span class="big" style="font-size:20px">${restaKcal >= 0 ? restaKcal : 0}</span> kcal<br>${restaKcal < 0 ? `excedeste ${-restaKcal} kcal` : `de ${m.kcal} kcal`}</div>
+      </div></div>
+      <div class="card small"><div class="main">
+        <div class="meta" style="margin-top:0">Proteína ${restaP >= 0 ? restaP : 0} g · Hidratos ${restaH >= 0 ? restaH : 0} g · Gordura ${restaG >= 0 ? restaG : 0} g por atingir</div>
+      </div></div>`;
+  } else {
+    saude += `<p class="empty">Define os teus objetivos em Saúde → Objetivos para ver as calorias e macros por atingir.</p>`;
+  }
+  document.getElementById("hoje-saude").innerHTML = saude;
+}
+
+// ----- Projetos -----
+function renderProjetos() {
+  const lista = document.getElementById("lista-proj");
+  if (!estado.projetos.length) { lista.innerHTML = `<p class="empty">Ainda sem projetos.</p>`; return; }
+  const grupos = {};
+  estado.projetos.forEach(p => {
+    const k = (estado.categorias[p.catIdx]?.nome || "Sem categoria") + (p.sub ? " · " + p.sub : "");
+    (grupos[k] ||= []).push(p);
+  });
+  lista.innerHTML = Object.entries(grupos).map(([k, ps]) => `
+    <h3>${esc(k)}</h3>
+    ${ps.map(p => `<div class="card">
+      <div class="main"><div class="title">${esc(p.titulo)}</div></div>
+      <button class="state ${p.estado.replace(" ", "-")}" data-estado="${p.id}">${p.estado}</button>
+      <button class="icon-btn" data-del-proj="${p.id}" aria-label="Apagar">×</button>
+    </div>`).join("")}`).join("");
+}
+
+// ----- Ideias -----
+function renderIdeias() {
+  const lista = document.getElementById("lista-ideias");
+  if (!estado.ideias.length) { lista.innerHTML = `<p class="empty">Sem ideias guardadas.</p>`; return; }
+  lista.innerHTML = [...estado.ideias].reverse().map(i => {
+    const cat = estado.categorias[i.catIdx];
+    return `<div class="card">
+      <div class="main">
+        <div class="title">${esc(i.texto)}</div>
+        <div class="meta">${cat ? esc(cat.nome) : "Sem categoria"}${i.sub ? " · " + esc(i.sub) : ""}</div>
+      </div>
+      <button class="icon-btn" data-del-ideia="${i.id}" aria-label="Apagar">×</button>
+    </div>`;
+  }).join("");
+}
+
+// ----- Categorias -----
+function renderCats() {
+  document.getElementById("lista-cats").innerHTML = estado.categorias.map((c, i) => `
+    <div class="card" style="flex-direction:column">
+      <div style="display:flex;width:100%;align-items:center">
+        <div class="title" style="flex:1">${esc(c.nome)}</div>
+        <button class="icon-btn" data-del-cat="${i}" aria-label="Apagar categoria">×</button>
+      </div>
+      <div class="chips" style="margin-top:10px">
+        ${c.subs.map((s, j) => `<span class="chip">${esc(s)} <span data-del-sub="${i}:${j}" style="cursor:pointer">×</span></span>`).join("")}
+      </div>
+      <form data-add-sub="${i}" style="display:flex;gap:8px;margin:0;width:100%">
+        <input name="sub" placeholder="Nova subcategoria" required style="padding:8px 10px">
+        <button class="btn" type="submit">+</button>
+      </form>
+    </div>`).join("");
+}
+
+function renderTudo() {
+  refreshSelects();
+  renderHoje();
+  renderAgenda();
+  renderProjetos();
+  renderIdeias();
+  renderCats();
+  renderSaude();
+  guardar();
+}
+
+// ----- Eventos -----
+document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("on", x === b));
+  document.querySelectorAll("main > section").forEach(s => s.classList.toggle("hidden", s.id !== "v-" + b.dataset.v));
+});
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-d]"); if (!b) return;
+  diaSel = b.dataset.d; renderTudo();
+});
+
+document.getElementById("f-comp").onsubmit = e => {
+  e.preventDefault();
+  const f = e.target;
+  if (f.fim.value <= f.inicio.value) { alert("A hora de fim tem de ser depois do início."); return; }
+  estado.compromissos.push({
+    id: id(), data: diaSel,
+    titulo: f.titulo.value.trim(),
+    inicio: f.inicio.value, fim: f.fim.value,
+    catIdx: +f.categoria.value, sub: f.sub.value
+  });
+  f.reset(); renderTudo();
+};
+
+document.getElementById("f-proj").onsubmit = e => {
+  e.preventDefault(); const f = e.target;
+  estado.projetos.push({ id: id(), titulo: f.titulo.value.trim(), catIdx: +f.categoria.value, sub: f.sub.value, estado: "a fazer" });
+  f.reset(); ligaCatSub(f); renderTudo();
+};
+
+document.getElementById("f-ideia").onsubmit = e => {
+  e.preventDefault(); const f = e.target;
+  estado.ideias.push({ id: id(), texto: f.texto.value.trim(), catIdx: +f.categoria.value, sub: f.sub.value });
+  f.reset(); renderTudo();
+};
+
+document.getElementById("f-cat").onsubmit = e => {
+  e.preventDefault();
+  estado.categorias.push({ nome: e.target.nome.value.trim(), subs: [] });
+  e.target.reset(); renderTudo();
+};
+
+document.getElementById("lista-cats").onsubmit = e => {
+  e.preventDefault();
+  const i = +e.target.dataset.addSub;
+  estado.categorias[i].subs.push(e.target.sub.value.trim());
+  renderTudo();
+};
+
+document.body.onclick = e => {
+  const t = e.target;
+  if (t.dataset.delComp) { estado.compromissos = estado.compromissos.filter(c => c.id !== t.dataset.delComp); renderTudo(); }
+  else if (t.dataset.delProj) { estado.projetos = estado.projetos.filter(p => p.id !== t.dataset.delProj); renderTudo(); }
+  else if (t.dataset.delIdeia) { estado.ideias = estado.ideias.filter(i => i.id !== t.dataset.delIdeia); renderTudo(); }
+  else if (t.dataset.estado) {
+    const p = estado.projetos.find(p => p.id === t.dataset.estado);
+    p.estado = ESTADOS[(ESTADOS.indexOf(p.estado) + 1) % ESTADOS.length];
+    renderTudo();
+  }
+  else if (t.dataset.delCat !== undefined) {
+    if (confirm("Apagar a categoria e as suas subcategorias? Os itens associados ficam sem categoria.")) {
+      estado.categorias.splice(+t.dataset.delCat, 1); renderTudo();
+    }
+  }
+  else if (t.dataset.delSub) {
+    const [i, j] = t.dataset.delSub.split(":").map(Number);
+    estado.categorias[i].subs.splice(j, 1); renderTudo();
+  }
+};
+
+// Ligar selects de categoria/subcategoria
+document.querySelectorAll("form").forEach(f => { if (f.querySelector('[name="categoria"], .sel-cat')) ligaCatSub(f); });
+document.getElementById("sel-cat-comp").addEventListener("change", e => atualizaSubs(e.target, document.getElementById("sel-sub-comp")));
+
+// ================= SAÚDE =================
+let scanner = null;
+
+function setStatus(t) { document.getElementById("estado-ai").textContent = t; }
+
+// Treinos: OCR no próprio telemóvel (Tesseract.js, gratuito)
+document.getElementById("img-treino").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  if (!window.Tesseract) { setStatus("O leitor de texto não carregou. Verifica a ligação."); return; }
+  setStatus("A ler o texto da imagem…");
+  try {
+    const { data } = await Tesseract.recognize(f, "por+eng");
+    const texto = data.text.split("\n").map(l => l.trim()).filter(Boolean).join("\n");
+    document.querySelector('#f-treino [name="notas"]').value = texto;
+    setStatus("Texto lido. Revê e guarda o treino.");
+  } catch (err) { setStatus("Erro ao ler: " + err.message); }
+  e.target.value = "";
+};
+
+document.getElementById("f-treino").onsubmit = e => {
+  e.preventDefault(); const f = e.target;
+  estado.saude.treinos.push({ id: id(), data: diaSel, nome: f.nome.value.trim(), exercicios: [], duracao_min: +f.duracao.value || null, notas: f.notas.value.trim() });
+  f.reset(); setStatus(""); renderTudo();
+};
+
+// Nutrição: código de barras (câmara) ou número escrito, com Open Food Facts (gratuito)
+async function pararScanner() {
+  if (scanner) { try { await scanner.stop(); scanner.clear(); } catch (e) {} scanner = null; }
+  document.getElementById("scanner").classList.add("hidden");
+}
+
+document.getElementById("btn-scan").onclick = async () => {
+  if (scanner) { await pararScanner(); return; }
+  if (!window.Html5Qrcode) { setStatus("O leitor não carregou. Verifica a ligação."); return; }
+  const box = document.getElementById("scanner");
+  box.classList.remove("hidden");
+  scanner = new Html5Qrcode("scanner");
+  try {
+    await scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: { width: 260, height: 140 } },
+      async codigo => { await pararScanner(); procurarProduto(codigo); }
+    );
+    setStatus("Aponta a câmara ao código de barras.");
+  } catch (err) {
+    scanner = null; box.classList.add("hidden");
+    setStatus("Não consegui usar a câmara: " + err);
+  }
+};
+
+document.getElementById("f-busca").onsubmit = e => {
+  e.preventDefault();
+  procurarProduto(e.target.codigo.value);
+};
+
+async function procurarProduto(codigo) {
+  codigo = String(codigo).replace(/\D/g, "");
+  if (!codigo) { setStatus("Código inválido."); return; }
+  const gramas = +document.querySelector('#f-busca [name="gramas"]').value || 100;
+  setStatus("A procurar o produto…");
+  try {
+    const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${codigo}.json?fields=product_name,brands,nutriments`);
+    const j = await r.json();
+    if (j.status !== 1 || !j.product) { setStatus("Produto não encontrado. Preenche os valores à mão."); return; }
+    const p = j.product, n = p.nutriments || {}, k = gramas / 100;
+    const kcal100 = n["energy-kcal_100g"] ?? (n.energy_100g ? n.energy_100g / 4.184 : 0);
+    const f = document.getElementById("f-comida");
+    f.nome.value = [p.brands, p.product_name].filter(Boolean).join(" ").trim() || "Produto " + codigo;
+    f.porcao.value = gramas + " g";
+    f.kcal.value = Math.round(kcal100 * k);
+    f.proteina_g.value = Math.round((n.proteins_100g || 0) * k);
+    f.hidratos_g.value = Math.round((n.carbohydrates_100g || 0) * k);
+    f.gordura_g.value = Math.round((n.fat_100g || 0) * k);
+    setStatus("Produto encontrado. Confirma e adiciona à refeição.");
+  } catch (err) { setStatus("Erro ao procurar: " + err.message); }
+}
+
+document.getElementById("f-comida").onsubmit = e => {
+  e.preventDefault(); const f = e.target;
+  estado.saude.refeicoes.push({
+    id: id(), data: diaSel, origem: "codigo_ou_manual",
+    nome: f.nome.value.trim(), porcao: f.porcao.value.trim(),
+    kcal: +f.kcal.value || 0, proteina_g: +f.proteina_g.value || 0, hidratos_g: +f.hidratos_g.value || 0, gordura_g: +f.gordura_g.value || 0
+  });
+  f.reset(); setStatus(""); renderTudo();
+};
+
+// Objetivos: cálculo calórico e de macros
+function calcularMetas(p) {
+  const tmb = 10 * p.peso + 6.25 * p.altura - 5 * p.idade + (p.sexo === "M" ? 5 : -161);
+  const tdee = tmb * p.atividade;
+  const ajuste = { perder: -500, manter: 0, ganhar: 300 }[p.objetivo];
+  const kcal = Math.round(tdee + ajuste);
+  const proteina = Math.round(p.peso * p.proteina_kg);
+  const gordura = Math.round(kcal * p.gordura_pct / 100 / 9);
+  const hidratos = Math.max(0, Math.round((kcal - proteina * 4 - gordura * 9) / 4));
+  return { kcal, proteina, hidratos, gordura, tmb: Math.round(tmb), manutencao: Math.round(tdee) };
+}
+
+document.getElementById("f-perfil").onsubmit = e => {
+  e.preventDefault(); const f = e.target;
+  const p = {
+    sexo: f.sexo.value, idade: +f.idade.value, altura: +f.altura.value, peso: +f.peso.value,
+    atividade: +f.atividade.value, objetivo: f.objetivo.value,
+    proteina_kg: +f.proteina_kg.value || 2, gordura_pct: +f.gordura_pct.value || 25
+  };
+  estado.perfil = { ...p, metas: calcularMetas(p) };
+  renderTudo();
+};
+
+function renderPerfil() {
+  const p = estado.perfil;
+  const f = document.getElementById("f-perfil");
+  if (p) {
+    f.sexo.value = p.sexo; f.idade.value = p.idade; f.altura.value = p.altura; f.peso.value = p.peso;
+    f.atividade.value = p.atividade; f.objetivo.value = p.objetivo;
+    f.proteina_kg.value = p.proteina_kg; f.gordura_pct.value = p.gordura_pct;
+    const m = p.metas;
+    document.getElementById("perfil-resumo").innerHTML = `<div class="card"><div class="main">
+        <div class="title">${m.kcal} kcal por dia</div>
+        <div class="meta">Proteína ${m.proteina} g · Hidratos ${m.hidratos} g · Gordura ${m.gordura} g</div>
+        <div class="meta">Metabolismo basal ${m.tmb} kcal · manutenção ${m.manutencao} kcal</div>
+      </div></div>`;
+  } else {
+    document.getElementById("perfil-resumo").innerHTML = `<p class="empty">Ainda sem objetivos definidos.</p>`;
+  }
+}
+
+document.querySelectorAll("[data-sub]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-sub]").forEach(x => x.classList.toggle("primary", x === b));
+  document.getElementById("s-treinos").classList.toggle("hidden", b.dataset.sub !== "treinos");
+  document.getElementById("s-nutricao").classList.toggle("hidden", b.dataset.sub !== "nutricao");
+  document.getElementById("s-objetivos").classList.toggle("hidden", b.dataset.sub !== "objetivos");
+});
+
+document.getElementById("v-saude").addEventListener("click", e => {
+  const t = e.target.closest("[data-del]"); if (!t) return;
+  const [tipo, iden] = t.dataset.del.split(":");
+  if (tipo === "treino") estado.saude.treinos = estado.saude.treinos.filter(x => x.id !== iden);
+  if (tipo === "comida") estado.saude.refeicoes = estado.saude.refeicoes.filter(x => x.id !== iden);
+  renderTudo();
+});
+
+function renderSaude() {
+  document.getElementById("saude-dia").textContent = fmtDataLonga(diaSel);
+
+  const treinos = estado.saude.treinos.filter(t => t.data === diaSel);
+  document.getElementById("lista-treinos").innerHTML = treinos.length ? treinos.map(t => {
+    const titulo = t.nome || "Treino";
+    return `<div class="card"><div class="main">
+      <div class="title">${esc(titulo)}</div>
+      <div class="meta">${t.duracao_min ? t.duracao_min + " min" : ""}</div>
+      ${t.notas ? `<div class="meta" style="white-space:pre-line">${esc(t.notas)}</div>` : ""}
+    </div><button class="icon-btn" data-del="treino:${t.id}" aria-label="Apagar">×</button></div>`;
+  }).join("") : `<p class="empty">Sem treinos neste dia.</p>`;
+
+  const ref = estado.saude.refeicoes.filter(r => r.data === diaSel);
+  const soma = k => ref.reduce((s, r) => s + (+r[k] || 0), 0);
+  document.getElementById("totais").innerHTML = ref.length ? `<div class="card"><div class="main">
+      <div class="title">${Math.round(soma("kcal"))} kcal${estado.perfil ? ` de ${estado.perfil.metas.kcal}` : ""}</div>
+      <div class="meta">P ${Math.round(soma("proteina_g"))} g · H ${Math.round(soma("hidratos_g"))} g · G ${Math.round(soma("gordura_g"))} g</div>
+    </div></div>` : "";
+
+  document.getElementById("lista-comida").innerHTML = ref.length ? ref.map(r => `<div class="card"><div class="main">
+      <div class="title">${esc(r.nome)}</div>
+      <div class="meta">${esc(r.porcao || "")}${r.porcao ? " · " : ""}${Math.round(r.kcal || 0)} kcal · P ${r.proteina_g || 0} · H ${r.hidratos_g || 0} · G ${r.gordura_g || 0}</div>
+    </div><button class="icon-btn" data-del="comida:${r.id}" aria-label="Apagar">×</button></div>`).join("")
+    : `<p class="empty">Sem refeições registadas neste dia.</p>`;
+
+  renderPerfil();
+}
+
+renderTudo();
+</script>
+</body>
+</html>
