@@ -196,48 +196,164 @@
   nav.tabs button.on { color: #fff; background: rgba(255,255,255,.16); box-shadow: inset 0 1px 0 rgba(255,255,255,.2); }
 
   #scanner { border-radius: 22px; }
+
+  /* Widgets da página inicial, em estilo widget do iPhone */
+  .widgets { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+  .tile {
+    aspect-ratio: 1 / 1;
+    border-radius: 26px;
+    padding: 14px;
+    display: flex; flex-direction: column; gap: 5px;
+    overflow: hidden;
+    background: var(--glass);
+    border: 1px solid var(--glass-line);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 10px 30px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.14);
+  }
+  .tile.wide { grid-column: span 2; aspect-ratio: auto; min-height: 150px; }
+  .t-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .t-big { font-size: 34px; font-weight: 700; letter-spacing: -.02em; line-height: 1; margin-top: auto; }
+  .t-sub { font-size: 12px; color: var(--muted); }
+  .ev {
+    font-size: 12px; padding: 5px 8px; border-radius: 10px;
+    background: rgba(255,255,255,.1);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ring {
+    position: relative; width: 66px; height: 66px; margin: auto;
+    border-radius: 50%;
+    background: conic-gradient(var(--accent) calc(var(--p) * 1%), rgba(255,255,255,.12) 0);
+    display: grid; place-items: center;
+  }
+  .ring::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: #121216; }
+  .ring span { position: relative; font-size: 15px; font-weight: 700; }
+  .macros { display: flex; justify-content: space-between; margin-top: auto; gap: 8px; }
+  .macros div { display: flex; flex-direction: column; }
+  .macros b { font-size: 22px; font-weight: 700; }
+  .macros span { font-size: 11px; color: var(--muted); }
+  .tile.split { aspect-ratio: auto; height: 346px; padding: 0; gap: 0; }
+  .half { flex: 1 1 50%; min-height: 0; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 5px; }
+  .half + .half { border-top: 1px solid var(--glass-line); }
+  .half .ev { white-space: nowrap; }
+  .ev-row { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border-radius: 12px; background: rgba(255,255,255,.08); }
+  .ev-hora { font-size: 12px; color: var(--muted); min-width: 52px; line-height: 1.3; }
+  .ev-txt { display: flex; flex-direction: column; min-width: 0; }
+  .ev-txt b { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ev-txt small { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .ev-row { margin-bottom: 6px; }
+  .ev-row.alerta { border-left: 3px solid #ff453a; }
+  .ev-row.aviso { border-left: 3px solid var(--warn); }
+  .ev-row.info { border-left: 3px solid var(--accent); }
+  .ev-row.alerta b, .ev-row.aviso b, .ev-row.info b { white-space: normal; }
+  .agente { margin-bottom: 14px; }
+
+  /* Calendário (Trabalho → Agenda) */
+  .cal-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .cal-head h2 { flex: 1; margin: 0; font-size: 26px; }
+  .cal-head .icon-btn { font-size: 26px; color: var(--text); }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 10px; }
+  .cal-cab { font-size: 11px; color: var(--muted); text-align: center; padding: 4px 0; font-weight: 600; }
+  .cal-dia {
+    aspect-ratio: 1; border: none; background: none; color: var(--text); border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    font-size: 15px; padding: 0; cursor: pointer;
+  }
+  .cal-dia.hoje b { color: #0a84ff; }
+  .cal-dia.sel { background: #f5f5f7; color: #000; }
+  .cal-dia.sel b { color: #000; }
+  .cal-dia .dots { display: flex; gap: 2px; height: 5px; }
+  .cal-dia .dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
+  .cal-dia.sel .dots i { background: #000; }
+  .cal-dia.mini { font-size: 11px; }
+  .cal-dia.mini .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--accent); }
+  .cal-dia.mini.sel .dot { background: #000; }
+  .ano-grid { display: grid; gap: 10px; }
+  .mes-mini { display: block; }
+  .mes-mini .cal-grid { gap: 2px; margin: 8px 0 0; }
+  .mes-titulo { background: none; border: none; color: var(--text); font-size: 16px; font-weight: 600; padding: 0; cursor: pointer; text-transform: capitalize; }
+  .sem-cab { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--muted); font-size: 13px; font-weight: 600; padding: 14px 4px 6px; cursor: pointer; text-transform: capitalize; }
+  .sem-cab.sel { color: var(--text); }
+  .hora { display: flex; gap: 10px; min-height: 52px; border-top: 1px solid var(--glass-line); padding: 6px 0; }
+  .hora > span { flex: 0 0 46px; width: 46px; font-size: 11px; color: var(--muted); padding-top: 2px; }
+  .hora-ev { flex: 1; min-width: 0; }
+  .hora-ev .card { margin-bottom: 6px; }
+
+  /* Ideias: pastas em widgets e lista ordenada por classificação */
+  .ideias-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .ideias-head h2 { flex: 1; margin: 0; }
+  .menu-wrap { position: relative; }
+  .menu {
+    position: absolute; right: 0; top: 48px; z-index: 10; min-width: 190px; padding: 6px;
+    border-radius: 18px; background: rgba(28,28,32,.85); border: 1px solid var(--glass-line);
+    -webkit-backdrop-filter: blur(30px) saturate(190%); backdrop-filter: blur(30px) saturate(190%);
+    box-shadow: 0 14px 40px rgba(0,0,0,.45);
+  }
+  .menu button { display: block; width: 100%; text-align: left; background: none; border: none; color: var(--text); padding: 12px 14px; border-radius: 12px; font-size: 15px; cursor: pointer; }
+  .menu button:active { background: rgba(255,255,255,.1); }
+  .pastas-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .tile.pasta { text-align: left; color: var(--text); font: inherit; cursor: pointer; }
+  .pasta-head { display: flex; align-items: center; justify-content: space-between; }
+  .voltar { background: none; border: none; color: #0a84ff; font-size: 16px; padding: 6px 0; cursor: pointer; }
+  .card.ideia { align-items: center; }
+  .nota {
+    flex: 0 0 40px; width: 40px; height: 40px; border-radius: 50%;
+    display: grid; place-items: center; font-weight: 700; font-size: 15px;
+    background: rgba(255,255,255,.1); color: var(--muted);
+  }
+  .nota.alta { background: rgba(48,209,88,.22); color: #30d158; }
+  .nota.media { background: rgba(255,214,10,.18); color: #ffd60a; }
+  .nota.baixa { background: rgba(255,69,58,.18); color: #ff453a; }
+  label input[type="range"] { padding: 0; margin-top: 8px; accent-color: #0a84ff; }
+  .voltar-round {
+    justify-self: start;
+    width: 44px; height: 44px; border-radius: 50%;
+    display: grid; place-items: center; padding: 0 0 3px;
+    background: var(--glass); border: 1px solid var(--glass-line); color: var(--text);
+    font-size: 26px; line-height: 1;
+    -webkit-backdrop-filter: blur(24px) saturate(180%); backdrop-filter: blur(24px) saturate(180%);
+    box-shadow: 0 8px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.2);
+    cursor: pointer;
+  }
   .totais { margin-bottom: 14px; }
 </style>
 </head>
 <body>
-<header>Vida</header>
+<header>Vida · v17</header>
 <main>
 
   <!-- HOJE -->
   <section id="v-hoje">
     <h2 id="hoje-titulo"></h2>
 
-    <h3>Agenda de hoje</h3>
-    <div id="hoje-agenda"></div>
-
-    <h3>Próximos dias</h3>
-    <div id="hoje-prox"></div>
-
-    <h3>Projetos pendentes</h3>
-    <div id="hoje-proj"></div>
-
-    <h3>Saúde</h3>
-    <div id="hoje-saude"></div>
-
-    <h3>Importar calendário</h3>
-    <div class="row cat">
-      <select id="ics-origem">
-        <option value="google">Google Calendar</option>
-        <option value="iphone">iPhone / iCloud</option>
-      </select>
-      <label class="btn primary upload" style="margin:0">Escolher .ics
-        <input type="file" accept=".ics,text/calendar" id="ics-file">
-      </label>
+    <div class="agente">
+      <div class="t-label" style="margin:6px 6px 8px">Assistente</div>
+      <div id="agente-alertas"></div>
+      <form id="f-agente" style="margin-top:6px">
+        <input name="pergunta" placeholder="Pergunta, por exemplo: o que tenho amanhã?">
+      </form>
+      <div id="agente-resposta"></div>
     </div>
-    <p class="empty" style="padding-top:8px">Substitui os eventos anteriores dessa origem. Eventos que se repetem (diários, semanais) entram só uma vez.</p>
-    <p id="ics-status" class="warn"></p>
+    <div class="widgets" id="widgets"></div>
+
   </section>
 
   <!-- AGENDA -->
   <section id="v-agenda" class="hidden">
-    <h2 id="dia-titulo"></h2>
-    <div class="days" id="dias"></div>
-    <form id="f-comp">
+    <div class="cal-head">
+      <button class="icon-btn" id="cal-prev" type="button" aria-label="Anterior">‹</button>
+      <h2 id="cal-titulo"></h2>
+      <button class="icon-btn" id="cal-next" type="button" aria-label="Seguinte">›</button>
+      <button class="btn primary" id="cal-add" type="button" aria-label="Adicionar">+</button>
+    </div>
+    <div class="subtabs">
+      <button class="btn" data-vista="dia">Dia</button>
+      <button class="btn" data-vista="semana">Semana</button>
+      <button class="btn primary" data-vista="mes">Mês</button>
+      <button class="btn" data-vista="ano">Ano</button>
+    </div>
+    <div id="cal"></div>
+    <form id="f-comp" class="hidden">
       <input name="titulo" placeholder="Compromisso" required>
       <div class="row">
         <label>Início <input type="time" name="inicio" required></label>
@@ -268,16 +384,36 @@
 
   <!-- IDEIAS -->
   <section id="v-ideias" class="hidden">
-    <h2>Ideias</h2>
-    <form id="f-ideia">
-      <textarea name="texto" placeholder="Escreve a ideia" required></textarea>
-      <div class="row cat">
-        <select name="categoria" class="sel-cat"></select>
-        <select name="sub" class="sel-sub"></select>
+    <div class="ideias-head">
+      <h2>Ideias</h2>
+      <div class="menu-wrap">
+        <button class="btn primary" id="ideia-mais" type="button" aria-label="Mais">+</button>
+        <div class="menu hidden" id="ideia-menu">
+          <button data-novo="ideia" type="button">Criar ideia</button>
+          <button data-novo="pasta" type="button">Criar pasta</button>
+        </div>
       </div>
+    </div>
+
+    <div id="ideias-vista"></div>
+
+    <form id="f-ideia" class="hidden">
+      <button class="voltar-round" data-fechar="f-ideia" type="button" aria-label="Voltar">‹</button>
+      <input name="titulo" placeholder="Título" required>
+      <textarea name="descricao" placeholder="Descrição"></textarea>
+      <select name="pasta" id="sel-pasta-ideia"></select>
+      <input name="nova_pasta" placeholder="Nome da nova pasta" class="hidden">
+      <label>Classificação: <output id="nota-out">5</output> / 10
+        <input name="nota" type="range" min="0" max="10" step="1" value="5">
+      </label>
       <button class="btn primary" type="submit">Guardar ideia</button>
     </form>
-    <div id="lista-ideias"></div>
+
+    <form id="f-pasta" class="hidden">
+      <button class="voltar-round" data-fechar="f-pasta" type="button" aria-label="Voltar">‹</button>
+      <input name="nome" placeholder="Nome da pasta" required>
+      <button class="btn primary" type="submit">Criar pasta</button>
+    </form>
   </section>
 
   <!-- SAÚDE -->
@@ -325,6 +461,30 @@
         <button class="btn" type="submit">Adicionar à refeição</button>
       </form>
       <p class="empty">Funciona com produtos embalados, através da base de dados gratuita Open Food Facts. Pratos caseiros introduz à mão.</p>
+      <h3>Refeições guardadas</h3>
+      <div id="lista-receitas"></div>
+      <button class="btn" id="btn-nova-receita" type="button" style="margin-bottom:12px">+ Criar refeição</button>
+      <form id="f-receita" class="hidden">
+        <input name="nome" placeholder="Nome da refeição (ex.: Arroz com frango)" required>
+        <select id="sel-produto"></select>
+        <div class="row">
+          <input name="gramas" type="number" min="1" placeholder="Quantidade (g)">
+          <button class="btn" id="btn-add-item" type="button">Adicionar ingrediente</button>
+        </div>
+        <div id="manual-item" class="hidden">
+          <input name="m_nome" placeholder="Nome do ingrediente">
+          <div class="row">
+            <input name="m_kcal" type="number" min="0" placeholder="kcal (para a quantidade indicada)">
+            <input name="m_p" type="number" min="0" placeholder="Proteína (g)">
+          </div>
+          <div class="row">
+            <input name="m_h" type="number" min="0" placeholder="Hidratos (g)">
+            <input name="m_g" type="number" min="0" placeholder="Gordura (g)">
+          </div>
+        </div>
+        <div id="rascunho"></div>
+        <button class="btn primary" type="submit">Guardar refeição</button>
+      </form>
       <div class="totais" id="totais"></div>
       <div id="lista-comida"></div>
     </div>
@@ -380,11 +540,9 @@
 
 <nav class="tabs">
   <button data-v="hoje" class="on">Hoje</button>
-  <button data-v="agenda">Agenda</button>
-  <button data-v="projetos">Projetos</button>
+  <button data-v="agenda">Trabalho</button>
   <button data-v="ideias">Ideias</button>
   <button data-v="saude">Saúde</button>
-  <button data-v="cats">Categorias</button>
 </nav>
 
 <script>
@@ -406,6 +564,11 @@ const estado = JSON.parse(localStorage.getItem(KEY) || "null") || {
 };
 estado.saude ||= { treinos: [], refeicoes: [] };
 estado.eventos ||= [];
+estado.produtos ||= {};
+estado.receitas ||= [];
+estado.pastas ||= [];
+// Migração: ideias antigas (texto simples) passam para o novo formato
+estado.ideias = estado.ideias.map(i => i.titulo !== undefined ? i : { id: i.id, titulo: i.texto || "Ideia", descricao: "", pastaId: null, nota: 5 });
 let diaSel = hoje();
 const guardar = () => localStorage.setItem(KEY, JSON.stringify(estado));
 const id = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -515,20 +678,6 @@ function parseICS(texto) {
     }));
 }
 
-document.getElementById("ics-file").onchange = async e => {
-  const f = e.target.files[0]; if (!f) return;
-  const origem = document.getElementById("ics-origem").value;
-  const nomeOrigem = origem === "google" ? "Google Calendar" : "iPhone";
-  const status = document.getElementById("ics-status");
-  try {
-    const novos = parseICS(await f.text()).map(x => ({ ...x, id: id(), origem }));
-    const limite = addDias(hoje(), -30);
-    estado.eventos = estado.eventos.filter(x => x.origem !== origem && x.data >= limite).concat(novos);
-    status.textContent = `${novos.length} eventos importados de ${nomeOrigem}.`;
-  } catch (err) { status.textContent = "Não consegui ler o ficheiro: " + err.message; }
-  e.target.value = "";
-  renderTudo();
-};
 
 // ----- Agenda -----
 function renderDias() {
@@ -540,61 +689,316 @@ function renderDias() {
       <small>${DIAS[dt.getDay()]}</small><b>${dt.getDate()}</b></button>`;
   }
   document.querySelectorAll(".days").forEach(el => el.innerHTML = html);
-  document.getElementById("dia-titulo").textContent = fmtDataLonga(diaSel);
 }
+// ----- Agenda em calendário (Trabalho → Agenda) -----
+let calVista = "mes";
+const pad2 = n => String(n).padStart(2, "0");
+const chaveData = (a, m, d) => `${a}-${pad2(m + 1)}-${pad2(d)}`;
+
+function addMeses(s, n) {
+  const d = new Date(s + "T12:00:00");
+  d.setDate(1);
+  d.setMonth(d.getMonth() + n);
+  return iso(d);
+}
+
+function navega(n) {
+  if (calVista === "mes") return addMeses(diaSel, n);
+  if (calVista === "ano") return addMeses(diaSel, 12 * n);
+  if (calVista === "semana") return addDias(diaSel, 7 * n);
+  return addDias(diaSel, n);
+}
+
+function gridMes(ano, mes, modo) {
+  const offset = (new Date(ano, mes, 1).getDay() + 6) % 7;
+  const total = new Date(ano, mes + 1, 0).getDate();
+  let html = ["S", "T", "Q", "Q", "S", "S", "D"].map(l => `<div class="cal-cab">${l}</div>`).join("");
+  for (let i = 0; i < offset; i++) html += `<div></div>`;
+  for (let dia = 1; dia <= total; dia++) {
+    const key = chaveData(ano, mes, dia);
+    const n = eventosDoDia(key).length;
+    const dots = Array.from({ length: Math.min(3, n) }, () => "<i></i>").join("");
+    if (modo === "ano") {
+      html += `<span class="cal-dia mini ${key === diaSel ? "sel" : ""}"><b>${dia}</b>${n ? '<i class="dot"></i>' : ""}</span>`;
+    } else {
+      html += `<button class="cal-dia ${key === diaSel ? "sel" : ""} ${key === hoje() ? "hoje" : ""}" data-cal="${key}" type="button"><b>${dia}</b><span class="dots">${dots}</span></button>`;
+    }
+  }
+  return `<div class="cal-grid">${html}</div>`;
+}
+
+function vistaAno(ano) {
+  let html = `<div class="ano-grid">`;
+  for (let mes = 0; mes < 12; mes++) {
+    const nome = new Date(ano, mes, 1).toLocaleDateString("pt-PT", { month: "long" });
+    html += `<div class="card small mes-mini">
+      <button class="mes-titulo" data-mes="${chaveData(ano, mes, 1)}" type="button">${nome}</button>
+      ${gridMes(ano, mes, "ano")}
+    </div>`;
+  }
+  return html + `</div>`;
+}
+
+function vistaDia() {
+  const evs = eventosDoDia(diaSel);
+  let html = evs.filter(e => e.dia).length ? renderLista(evs.filter(e => e.dia), true, true) : "";
+  for (let hr = 6; hr <= 23; hr++) {
+    const linhas = evs.filter(e => {
+      if (e.dia) return false;
+      const h = +e.inicio.slice(0, 2);
+      return hr === 6 ? h <= 6 : h === hr;
+    });
+    html += `<div class="hora"><span>${pad2(hr)}:00</span><div class="hora-ev">${linhas.length ? renderLista(linhas, true, true) : ""}</div></div>`;
+  }
+  return html;
+}
+
+function vistaSemana() {
+  const ini = inicioSemana(diaSel);
+  let html = "";
+  for (let i = 0; i < 7; i++) {
+    const d = addDias(ini, i);
+    const dt = new Date(d + "T12:00:00");
+    html += `<button class="sem-cab ${d === diaSel ? "sel" : ""}" data-cal="${d}" type="button">${DIAS[dt.getDay()]} ${dt.getDate()}</button>`;
+    html += renderLista(eventosDoDia(d), true, true);
+  }
+  return html;
+}
+
 function renderAgenda() {
-  renderDias();
-  document.getElementById("lista-comp").innerHTML = renderLista(eventosDoDia(diaSel), true, false);
+  const d = new Date(diaSel + "T12:00:00");
+  const titulo = calVista === "ano" ? String(d.getFullYear())
+    : calVista === "mes" ? d.toLocaleDateString("pt-PT", { month: "long", year: "numeric" })
+    : calVista === "semana" ? "Semana de " + new Date(inicioSemana(diaSel) + "T12:00:00").toLocaleDateString("pt-PT", { day: "numeric", month: "long" })
+    : fmtDataLonga(diaSel);
+  document.getElementById("cal-titulo").textContent = titulo;
+  document.querySelectorAll("[data-vista]").forEach(b => b.classList.toggle("primary", b.dataset.vista === calVista));
+
+  const cal = document.getElementById("cal");
+  const lista = document.getElementById("lista-comp");
+  lista.innerHTML = "";
+  if (calVista === "mes") {
+    cal.innerHTML = gridMes(d.getFullYear(), d.getMonth(), "mes");
+    lista.innerHTML = `<h3>${fmtDataLonga(diaSel)}</h3>` + renderLista(eventosDoDia(diaSel), true, false);
+  } else if (calVista === "ano") {
+    cal.innerHTML = vistaAno(d.getFullYear());
+  } else if (calVista === "semana") {
+    cal.innerHTML = vistaSemana();
+  } else {
+    cal.innerHTML = vistaDia();
+  }
 }
+
+document.getElementById("cal-prev").onclick = () => { diaSel = navega(-1); renderTudo(); };
+document.getElementById("cal-next").onclick = () => { diaSel = navega(1); renderTudo(); };
+document.getElementById("cal-add").onclick = () => document.getElementById("f-comp").classList.toggle("hidden");
+
+document.addEventListener("click", e => {
+  const v = e.target.closest("[data-vista]");
+  if (v) { calVista = v.dataset.vista; renderTudo(); return; }
+  const c = e.target.closest("[data-cal]");
+  if (c) { diaSel = c.dataset.cal; renderTudo(); return; }
+  const m = e.target.closest("[data-mes]");
+  if (m) { diaSel = m.dataset.mes; calVista = "mes"; renderTudo(); }
+});
+
+// ----- Agente (regras, sem IA) -----
+function totaisDoDia(d) {
+  return estado.saude.refeicoes.filter(r => r.data === d).reduce((s, r) => ({
+    n: s.n + 1,
+    kcal: s.kcal + (+r.kcal || 0),
+    p: s.p + (+r.proteina_g || 0),
+    h: s.h + (+r.hidratos_g || 0),
+    g: s.g + (+r.gordura_g || 0)
+  }), { n: 0, kcal: 0, p: 0, h: 0, g: 0 });
+}
+
+function treinosDaSemana(d) {
+  const ini = inicioSemana(d), fim = addDias(ini, 6);
+  return estado.saude.treinos.filter(t => t.data >= ini && t.data <= fim).length;
+}
+
+function regrasAgente() {
+  const alertas = [];
+  const agora = new Date();
+  const hora = agora.getHours() + agora.getMinutes() / 60;
+  const h = hoje();
+  const diaSemana = (agora.getDay() + 6) % 7; // 0 = segunda
+  const m = estado.perfil?.metas;
+
+  // 1. Compromissos que se sobrepõem (hoje e amanhã)
+  [h, addDias(h, 1)].forEach((d, idx) => {
+    const evs = eventosDoDia(d).filter(e => !e.dia);
+    for (let i = 0; i < evs.length; i++) for (let j = i + 1; j < evs.length; j++) {
+      const a = evs[i], b = evs[j];
+      if (a.inicio < b.fim && b.inicio < a.fim) {
+        alertas.push({ nivel: "aviso", texto: `${idx ? "Amanhã" : "Hoje"}: "${a.titulo}" sobrepõe-se a "${b.titulo}" (${a.inicio}–${a.fim} e ${b.inicio}–${b.fim}).` });
+      }
+    }
+  });
+
+  // 2. Compromissos nas próximas duas horas
+  eventosDoDia(h).filter(e => !e.dia).forEach(e => {
+    const [hh, mm] = e.inicio.split(":").map(Number);
+    const t = hh + mm / 60;
+    if (t > hora && t - hora <= 2) alertas.push({ nivel: "info", texto: `Em breve: "${e.titulo}" às ${e.inicio}.` });
+  });
+
+  // 3. Meta semanal de treinos (6)
+  const treinos = treinosDaSemana(h);
+  const faltam = Math.max(0, 6 - treinos);
+  const diasRestantes = 7 - diaSemana; // inclui hoje
+  if (faltam > 0) {
+    if (faltam >= diasRestantes) {
+      alertas.push({ nivel: "alerta", texto: `Para chegar a 6 treinos esta semana, tens de treinar em todos os ${diasRestantes} dias que faltam.` });
+    } else if (treinos < Math.round(6 * (diaSemana + 1) / 7)) {
+      alertas.push({ nivel: "aviso", texto: `Vais em ${treinos} de 6 treinos. Faltam ${faltam} e restam ${diasRestantes} dias esta semana.` });
+    }
+  }
+
+  // 4. Dias sem treinar
+  const datas = estado.saude.treinos.map(t => t.data).sort();
+  if (!datas.length) {
+    if (diaSemana >= 2) alertas.push({ nivel: "aviso", texto: "Ainda não registaste nenhum treino." });
+  } else {
+    const ultimo = datas[datas.length - 1];
+    const dias = Math.round((new Date(h + "T12:00") - new Date(ultimo + "T12:00")) / 86400000);
+    if (dias >= 3) alertas.push({ nivel: "aviso", texto: `Último treino há ${dias} dias.` });
+  }
+
+  // 5. Nutrição
+  if (!m) {
+    alertas.push({ nivel: "info", texto: "Ainda não definiste objetivos. Vai a Saúde → Objetivos para teres metas de calorias e macros." });
+  } else {
+    const t = totaisDoDia(h);
+    if (t.n === 0 && hora >= 13) alertas.push({ nivel: "info", texto: "Ainda não registaste refeições hoje." });
+    if (t.n > 0 && hora >= 20 && t.kcal < m.kcal * 0.6) {
+      alertas.push({ nivel: "aviso", texto: `Hoje só registaste ${Math.round(t.kcal)} de ${m.kcal} kcal. Faltam ${Math.round(m.kcal - t.kcal)}.` });
+    }
+    if (t.kcal > m.kcal * 1.1) alertas.push({ nivel: "alerta", texto: `Ultrapassaste a meta de hoje em ${Math.round(t.kcal - m.kcal)} kcal.` });
+    const faltaP = m.proteina - t.p;
+    if (hora >= 18 && faltaP > m.proteina * 0.5) alertas.push({ nivel: "aviso", texto: `Proteína baixa: faltam ${Math.round(faltaP)} g para a meta de ${m.proteina} g.` });
+  }
+
+  // 6. Demasiados projetos em curso ao mesmo tempo
+  const emCurso = estado.projetos.filter(p => p.estado === "em curso").length;
+  if (emCurso > 3) alertas.push({ nivel: "info", texto: `Tens ${emCurso} projetos em curso. Escolhe dois ou três para hoje.` });
+
+  return alertas;
+}
+
+function renderAlertas() {
+  const al = regrasAgente();
+  document.getElementById("agente-alertas").innerHTML = al.length
+    ? al.map(a => `<div class="ev-row ${a.nivel}"><span class="ev-txt"><b>${esc(a.texto)}</b></span></div>`).join("")
+    : `<p class="empty">Sem avisos. Está tudo em ordem.</p>`;
+}
+
+function responderAgente(pergunta) {
+  const p = pergunta.toLowerCase();
+  const h = hoje(), amanha = addDias(h, 1), m = estado.perfil?.metas;
+  const lista = d => {
+    const evs = eventosDoDia(d);
+    return evs.length ? evs.map(e => `${e.dia ? "Dia inteiro" : e.inicio + "–" + e.fim} · ${e.titulo}`).join("\n") : "Nada marcado.";
+  };
+  if (/amanh/.test(p)) return `Amanhã:\n${lista(amanha)}`;
+  if (/treino/.test(p)) {
+    const n = treinosDaSemana(h), f = Math.max(0, 6 - n);
+    return `Esta semana: ${n} de 6 treinos. ${f ? `Faltam ${f}.` : "Meta cumprida."}`;
+  }
+  if (/projeto/.test(p)) {
+    const pend = estado.projetos.filter(x => x.estado !== "concluído");
+    return pend.length ? "Projetos pendentes:\n" + pend.map(x => `${x.titulo} (${x.estado})`).join("\n") : "Não tens projetos pendentes.";
+  }
+  if (/prote|macro|calori|kcal|comi|meta|gordura|hidrat/.test(p)) {
+    if (!m) return "Ainda não tens objetivos definidos. Vai a Saúde → Objetivos.";
+    const t = totaisDoDia(h);
+    return `Hoje: ${Math.round(t.kcal)} de ${m.kcal} kcal.\nProteína ${Math.round(t.p)} de ${m.proteina} g · Hidratos ${Math.round(t.h)} de ${m.hidratos} g · Gordura ${Math.round(t.g)} de ${m.gordura} g.`;
+  }
+  if (/hoje|agenda|compromisso|evento|tenho/.test(p)) return `Hoje:\n${lista(h)}`;
+  return "Posso dizer-te o que tens hoje ou amanhã, as calorias e macros, os treinos da semana e os projetos pendentes. Experimenta, por exemplo: o que tenho amanhã?";
+}
+
+document.getElementById("f-agente").onsubmit = e => {
+  e.preventDefault();
+  const pergunta = e.target.pergunta.value.trim();
+  if (!pergunta) return;
+  document.getElementById("agente-resposta").innerHTML = `
+    <div class="card small"><div class="main"><div class="meta" style="margin-top:0">Tu</div><div class="title">${esc(pergunta)}</div></div></div>
+    <div class="card small"><div class="main"><div class="meta" style="margin-top:0">Assistente</div><div class="title" style="white-space:pre-line">${esc(responderAgente(pergunta))}</div></div></div>`;
+  e.target.reset();
+};
 
 // ----- Hoje -----
 function renderHoje() {
   const h = hoje();
   document.getElementById("hoje-titulo").textContent = fmtDataLonga(h);
-  document.getElementById("hoje-agenda").innerHTML = renderLista(eventosDoDia(h), false, false);
+  renderAlertas();
 
-  document.getElementById("hoje-prox").innerHTML = [1, 2].map(n => {
-    const d = addDias(h, n);
-    return `<h3>${fmtDataLonga(d)}</h3>${renderLista(eventosDoDia(d), false, true)}`;
-  }).join("");
-
-  const pendentes = estado.projetos.filter(p => p.estado !== "concluído");
-  document.getElementById("hoje-proj").innerHTML = pendentes.length
-    ? pendentes.slice(0, 8).map(p => `<div class="card small"><div class="main">
-        <div class="title">${esc(p.titulo)}</div>
-        <div class="meta">${esc(estado.categorias[p.catIdx]?.nome || "Sem categoria")}${p.sub ? " · " + esc(p.sub) : ""}</div>
-      </div><button class="state ${p.estado.replace(" ", "-")}" data-estado="${p.id}">${p.estado}</button></div>`).join("")
-      + (pendentes.length > 8 ? `<p class="empty">+ ${pendentes.length - 8} na secção Projetos</p>` : "")
-    : `<p class="empty">Sem projetos pendentes.</p>`;
+  const mini = it => `<div class="ev">${it.dia ? "" : esc(it.inicio) + " "}${esc(it.titulo)}</div>`;
+  const evHoje = eventosDoDia(h);
+  const amanha = addDias(h, 1);
+  const evsA = eventosDoDia(amanha);
+  const rotulo = new Date(amanha + "T12:00:00").toLocaleDateString("pt-PT", { weekday: "long", day: "numeric", month: "long" });
+  let html = `<div class="tile wide split">
+      <div class="half">
+        <div class="t-label">Agenda de hoje</div>
+        ${evHoje.length ? evHoje.map(mini).join("") : `<div class="t-sub">Dia livre</div>`}
+      </div>
+      <div class="half">
+        <div class="t-label">Amanhã · ${esc(rotulo)}</div>
+        ${evsA.length
+          ? evsA.map(it => `<div class="ev-row">
+              <span class="ev-hora">${it.dia ? "Dia inteiro" : esc(it.inicio) + "<br>" + esc(it.fim)}</span>
+              <span class="ev-txt"><b>${esc(it.titulo)}</b><small>${esc(it.meta)}</small></span>
+            </div>`).join("")
+          : `<div class="t-sub">Dia livre</div>`}
+      </div>
+    </div>`;
 
   const ini = inicioSemana(h), fim = addDias(ini, 6);
-  const treinosSemana = estado.saude.treinos.filter(t => t.data >= ini && t.data <= fim).length;
-  const faltam = Math.max(0, 6 - treinosSemana);
-
-  let saude = `<div class="card small"><div class="main stat">
-      <div class="title">Treinos esta semana</div>
-      <div class="meta"><span class="big" style="font-size:20px">${treinosSemana}/6</span><br>${faltam ? `faltam ${faltam}` : "meta cumprida"}</div>
-    </div></div>`;
+  const treinos = estado.saude.treinos.filter(t => t.data >= ini && t.data <= fim).length;
+  const faltam = Math.max(0, 6 - treinos);
+  html += `<div class="tile">
+      <div class="t-label">Treinos</div>
+      <div class="ring" style="--p:${Math.min(100, treinos / 6 * 100)}"><span>${treinos}/6</span></div>
+      <div class="t-sub" style="text-align:center">${faltam ? `faltam ${faltam}` : "meta cumprida"}</div>
+    </div>`;
 
   const m = estado.perfil?.metas;
   if (m) {
-    const ref = estado.saude.refeicoes.filter(r => r.data === h);
-    const soma = k => ref.reduce((s, r) => s + (+r[k] || 0), 0);
-    const restaKcal = Math.round(m.kcal - soma("kcal"));
-    const restaP = Math.round(m.proteina - soma("proteina_g"));
-    const restaH = Math.round(m.hidratos - soma("hidratos_g"));
-    const restaG = Math.round(m.gordura - soma("gordura_g"));
-    saude += `<div class="card small"><div class="main stat">
-        <div class="title">Calorias por atingir</div>
-        <div class="meta"><span class="big" style="font-size:20px">${restaKcal >= 0 ? restaKcal : 0}</span> kcal<br>${restaKcal < 0 ? `excedeste ${-restaKcal} kcal` : `de ${m.kcal} kcal`}</div>
-      </div></div>
-      <div class="card small"><div class="main">
-        <div class="meta" style="margin-top:0">Proteína ${restaP >= 0 ? restaP : 0} g · Hidratos ${restaH >= 0 ? restaH : 0} g · Gordura ${restaG >= 0 ? restaG : 0} g por atingir</div>
-      </div></div>`;
+    const t = totaisDoDia(h);
+    const pct = Math.min(100, t.kcal / m.kcal * 100);
+    html += `<div class="tile">
+        <div class="t-label">Alimentação</div>
+        <div class="ring" style="--p:${pct}"><span>${Math.round(t.kcal)}</span></div>
+        <div class="t-sub" style="text-align:center">de ${m.kcal} kcal</div>
+      </div>
+      <div class="tile wide">
+        <div class="t-label">Macros concluídos</div>
+        <div class="macros">
+          <div><b>${Math.round(t.p)}/${m.proteina}</b><span>g proteína</span></div>
+          <div><b>${Math.round(t.h)}/${m.hidratos}</b><span>g hidratos</span></div>
+          <div><b>${Math.round(t.g)}/${m.gordura}</b><span>g gordura</span></div>
+        </div>
+      </div>`;
   } else {
-    saude += `<p class="empty">Define os teus objetivos em Saúde → Objetivos para ver as calorias e macros por atingir.</p>`;
+    html += `<div class="tile">
+        <div class="t-label">Alimentação</div>
+        <div class="t-sub" style="margin-top:auto">Define os objetivos em Saúde → Objetivos para veres as calorias e macros.</div>
+      </div>`;
   }
-  document.getElementById("hoje-saude").innerHTML = saude;
+
+  const pendentes = estado.projetos.filter(p => p.estado !== "concluído");
+  html += `<div class="tile">
+      <div class="t-label">Projetos</div>
+      <div class="t-big">${pendentes.length}</div>
+      <div class="t-sub">pendentes</div>
+      ${pendentes.slice(0, 2).map(p => `<div class="ev">${esc(p.titulo)}</div>`).join("")}
+    </div>`;
+
+
+  document.getElementById("widgets").innerHTML = html;
 }
 
 // ----- Projetos -----
@@ -615,21 +1019,93 @@ function renderProjetos() {
     </div>`).join("")}`).join("");
 }
 
-// ----- Ideias -----
+// ----- Ideias: pastas e ideias ordenadas por classificação -----
+let ideiasPasta = null; // null = pastas; "sem" = sem pasta; id = pasta
+
 function renderIdeias() {
-  const lista = document.getElementById("lista-ideias");
-  if (!estado.ideias.length) { lista.innerHTML = `<p class="empty">Sem ideias guardadas.</p>`; return; }
-  lista.innerHTML = [...estado.ideias].reverse().map(i => {
-    const cat = estado.categorias[i.catIdx];
-    return `<div class="card">
-      <div class="main">
-        <div class="title">${esc(i.texto)}</div>
-        <div class="meta">${cat ? esc(cat.nome) : "Sem categoria"}${i.sub ? " · " + esc(i.sub) : ""}</div>
+  const vista = document.getElementById("ideias-vista");
+
+  const sel = document.getElementById("sel-pasta-ideia");
+  const v = sel.value;
+  sel.innerHTML = `<option value="">Sem pasta</option>`
+    + estado.pastas.map(p => `<option value="${p.id}">${esc(p.nome)}</option>`).join("")
+    + `<option value="__nova__">+ Criar nova pasta</option>`;
+  if ([...sel.options].some(o => o.value === v)) sel.value = v;
+
+  if (ideiasPasta && ideiasPasta !== "sem" && !estado.pastas.some(p => p.id === ideiasPasta)) ideiasPasta = null;
+
+  if (!ideiasPasta) {
+    const tiles = estado.pastas.map(p => ({ id: p.id, nome: p.nome, ideias: estado.ideias.filter(i => i.pastaId === p.id) }));
+    const semPasta = estado.ideias.filter(i => !i.pastaId);
+    if (semPasta.length) tiles.push({ id: "sem", nome: "Sem pasta", ideias: semPasta });
+    vista.innerHTML = tiles.length
+      ? `<div class="pastas-grid">${tiles.map(t => {
+          const ord = [...t.ideias].sort((a, b) => b.nota - a.nota);
+          return `<button class="tile pasta" data-pasta="${t.id}" type="button">
+              <div class="t-label">${esc(t.nome)}</div>
+              <div class="t-big">${t.ideias.length}</div>
+              <div class="t-sub">${t.ideias.length === 1 ? "ideia" : "ideias"}${ord.length ? ` · melhor ${ord[0].nota}/10` : ""}</div>
+              ${ord.slice(0, 2).map(i => `<div class="ev">${esc(i.titulo)}</div>`).join("")}
+            </button>`;
+        }).join("")}</div>`
+      : `<p class="empty">Ainda sem ideias. Toca em + para criar uma ideia ou uma pasta.</p>`;
+  } else {
+    const nome = ideiasPasta === "sem" ? "Sem pasta" : estado.pastas.find(p => p.id === ideiasPasta).nome;
+    const lista = estado.ideias
+      .filter(i => ideiasPasta === "sem" ? !i.pastaId : i.pastaId === ideiasPasta)
+      .sort((a, b) => b.nota - a.nota);
+    vista.innerHTML = `
+      <div class="pasta-head">
+        <button class="voltar" data-pasta="" type="button">‹ Pastas</button>
+        ${ideiasPasta !== "sem" ? `<button class="voltar" data-del-pasta="${ideiasPasta}" type="button">Apagar pasta</button>` : ""}
       </div>
-      <button class="icon-btn" data-del-ideia="${i.id}" aria-label="Apagar">×</button>
-    </div>`;
-  }).join("");
+      <h2 style="margin-top:6px">${esc(nome)}</h2>
+      ${lista.length ? lista.map(i => `<div class="card ideia">
+          <div class="nota ${i.nota >= 7 ? "alta" : i.nota >= 4 ? "media" : "baixa"}">${i.nota}</div>
+          <div class="main">
+            <div class="title">${esc(i.titulo)}</div>
+            ${i.descricao ? `<div class="meta" style="white-space:pre-line">${esc(i.descricao)}</div>` : ""}
+          </div>
+          <button class="icon-btn" data-del-ideia="${i.id}" aria-label="Apagar">×</button>
+        </div>`).join("")
+        : `<p class="empty">Esta pasta está vazia.</p>`}`;
+  }
 }
+
+document.getElementById("ideia-mais").onclick = () => document.getElementById("ideia-menu").classList.toggle("hidden");
+
+document.addEventListener("click", e => {
+  const n = e.target.closest("[data-novo]");
+  if (n) {
+    document.getElementById("ideia-menu").classList.add("hidden");
+    const tipo = n.dataset.novo;
+    document.getElementById("f-ideia").classList.toggle("hidden", tipo !== "ideia");
+    document.getElementById("f-pasta").classList.toggle("hidden", tipo !== "pasta");
+    if (tipo === "ideia" && ideiasPasta && ideiasPasta !== "sem") document.getElementById("sel-pasta-ideia").value = ideiasPasta;
+    document.getElementById("sel-pasta-ideia").dispatchEvent(new Event("change"));
+    return;
+  }
+  const p = e.target.closest("[data-pasta]");
+  if (p) { ideiasPasta = p.dataset.pasta || null; renderIdeias(); return; }
+  const dp = e.target.closest("[data-del-pasta]");
+  if (dp) {
+    if (confirm("Apagar a pasta? As ideias passam para 'Sem pasta'.")) {
+      const pid = dp.dataset.delPasta;
+      estado.ideias.forEach(i => { if (i.pastaId === pid) i.pastaId = null; });
+      estado.pastas = estado.pastas.filter(x => x.id !== pid);
+      ideiasPasta = null;
+      renderTudo();
+    }
+  }
+});
+
+document.getElementById("sel-pasta-ideia").onchange = e => {
+  document.querySelector('#f-ideia [name="nova_pasta"]').classList.toggle("hidden", e.target.value !== "__nova__");
+};
+
+document.querySelector('#f-ideia [name="nota"]').oninput = e => {
+  document.getElementById("nota-out").textContent = e.target.value;
+};
 
 // ----- Categorias -----
 function renderCats() {
@@ -659,6 +1135,25 @@ function renderTudo() {
   renderSaude();
   guardar();
 }
+
+// ----- Trabalho: agenda, projetos e categorias num só separador -----
+const TRABALHO_SUB = `<div class="subtabs">
+  <button class="btn" data-go="agenda">Agenda</button>
+  <button class="btn" data-go="projetos">Projetos</button>
+  <button class="btn" data-go="cats">Categorias</button>
+</div>`;
+["v-agenda", "v-projetos", "v-cats"].forEach(sid => document.getElementById(sid).insertAdjacentHTML("afterbegin", TRABALHO_SUB));
+
+function mostrarSeccao(sec) {
+  document.querySelectorAll("main > section").forEach(s => s.classList.toggle("hidden", s.id !== "v-" + sec));
+  const tab = sec === "hoje" || sec === "ideias" || sec === "saude" ? sec : "agenda";
+  document.querySelectorAll("nav.tabs button").forEach(x => x.classList.toggle("on", x.dataset.v === tab));
+  document.querySelectorAll("[data-go]").forEach(b => b.classList.toggle("primary", b.dataset.go === sec));
+}
+
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-go]"); if (b) mostrarSeccao(b.dataset.go);
+});
 
 // ----- Eventos -----
 document.querySelectorAll("nav.tabs button").forEach(b => b.onclick = () => {
@@ -692,8 +1187,37 @@ document.getElementById("f-proj").onsubmit = e => {
 
 document.getElementById("f-ideia").onsubmit = e => {
   e.preventDefault(); const f = e.target;
-  estado.ideias.push({ id: id(), texto: f.texto.value.trim(), catIdx: +f.categoria.value, sub: f.sub.value });
-  f.reset(); renderTudo();
+  let pastaId = f.pasta.value || null;
+  if (pastaId === "__nova__") {
+    const nome = f.nova_pasta.value.trim();
+    if (!nome) { alert("Escreve o nome da nova pasta."); return; }
+    pastaId = id();
+    estado.pastas.push({ id: pastaId, nome });
+  }
+  estado.ideias.push({ id: id(), titulo: f.titulo.value.trim(), descricao: f.descricao.value.trim(), pastaId, nota: +f.nota.value });
+  f.reset();
+  f.nova_pasta.classList.add("hidden");
+  document.getElementById("nota-out").textContent = "5";
+  f.classList.add("hidden");
+  renderTudo();
+};
+
+// Botões "‹ Voltar" dos formulários de ideias
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-fechar]");
+  if (!b) return;
+  const form = document.getElementById(b.dataset.fechar);
+  form.reset();
+  form.classList.add("hidden");
+  form.querySelector('[name="nova_pasta"]')?.classList.add("hidden");
+  document.getElementById("nota-out").textContent = "5";
+});
+
+document.getElementById("f-pasta").onsubmit = e => {
+  e.preventDefault(); const f = e.target;
+  estado.pastas.push({ id: id(), nome: f.nome.value.trim() });
+  f.reset(); f.classList.add("hidden");
+  renderTudo();
 };
 
 document.getElementById("f-cat").onsubmit = e => {
@@ -793,6 +1317,17 @@ async function procurarProduto(codigo) {
   codigo = String(codigo).replace(/\D/g, "");
   if (!codigo) { setStatus("Código inválido."); return; }
   const gramas = +document.querySelector('#f-busca [name="gramas"]').value || 100;
+  const guardado = estado.produtos[codigo];
+  if (guardado) {
+    const k = gramas / 100, f = document.getElementById("f-comida");
+    f.nome.value = guardado.nome; f.porcao.value = gramas + " g";
+    f.kcal.value = Math.round(guardado.kcal100 * k);
+    f.proteina_g.value = Math.round(guardado.p100 * k);
+    f.hidratos_g.value = Math.round(guardado.h100 * k);
+    f.gordura_g.value = Math.round(guardado.g100 * k);
+    setStatus("Produto já guardado. Confirma e adiciona à refeição.");
+    return;
+  }
   setStatus("A procurar o produto…");
   try {
     const r = await fetch(`https://world.openfoodfacts.org/api/v2/product/${codigo}.json?fields=product_name,brands,nutriments`);
@@ -807,7 +1342,9 @@ async function procurarProduto(codigo) {
     f.proteina_g.value = Math.round((n.proteins_100g || 0) * k);
     f.hidratos_g.value = Math.round((n.carbohydrates_100g || 0) * k);
     f.gordura_g.value = Math.round((n.fat_100g || 0) * k);
-    setStatus("Produto encontrado. Confirma e adiciona à refeição.");
+    estado.produtos[codigo] = { nome: f.nome.value, kcal100, p100: n.proteins_100g || 0, h100: n.carbohydrates_100g || 0, g100: n.fat_100g || 0 };
+    guardar();
+    setStatus("Produto encontrado e guardado para a próxima vez.");
   } catch (err) { setStatus("Erro ao procurar: " + err.message); }
 }
 
@@ -870,10 +1407,22 @@ document.querySelectorAll("[data-sub]").forEach(b => b.onclick = () => {
 });
 
 document.getElementById("v-saude").addEventListener("click", e => {
-  const t = e.target.closest("[data-del]"); if (!t) return;
+  const t = e.target.closest("[data-del],[data-usar],[data-rasc]"); if (!t) return;
+  if (t.dataset.rasc !== undefined) { rascunho.splice(+t.dataset.rasc, 1); renderTudo(); return; }
+  if (t.dataset.usar) {
+    const rid = t.dataset.usar.split(":")[1];
+    const r = estado.receitas.find(x => x.id === rid);
+    if (r) {
+      const tt = totaisItens(r.itens);
+      const gr = r.itens.reduce((s, i) => s + i.gramas, 0);
+      estado.saude.refeicoes.push({ id: id(), data: diaSel, origem: "receita", nome: r.nome, porcao: `${Math.round(gr)} g`, kcal: tt.kcal, proteina_g: tt.p, hidratos_g: tt.h, gordura_g: tt.g });
+    }
+    renderTudo(); return;
+  }
   const [tipo, iden] = t.dataset.del.split(":");
   if (tipo === "treino") estado.saude.treinos = estado.saude.treinos.filter(x => x.id !== iden);
   if (tipo === "comida") estado.saude.refeicoes = estado.saude.refeicoes.filter(x => x.id !== iden);
+  if (tipo === "receita") estado.receitas = estado.receitas.filter(x => x.id !== iden);
   renderTudo();
 });
 
@@ -903,8 +1452,91 @@ function renderSaude() {
     </div><button class="icon-btn" data-del="comida:${r.id}" aria-label="Apagar">×</button></div>`).join("")
     : `<p class="empty">Sem refeições registadas neste dia.</p>`;
 
+  renderDias();
   renderPerfil();
+  renderReceitas();
 }
+
+// ----- Refeições guardadas (receitas) -----
+let rascunho = [];
+
+function totaisItens(itens) {
+  return itens.reduce((s, i) => ({ kcal: s.kcal + i.kcal, p: s.p + i.p, h: s.h + i.h, g: s.g + i.g }), { kcal: 0, p: 0, h: 0, g: 0 });
+}
+
+function opcoesProdutos() {
+  return `<option value="">— escolhe um produto guardado —</option>`
+    + Object.entries(estado.produtos).map(([c, p]) => `<option value="${esc(c)}">${esc(p.nome)}</option>`).join("")
+    + `<option value="manual">Manual (valores à mão)</option>`;
+}
+
+function renderReceitas() {
+  const sel = document.getElementById("sel-produto");
+  const v = sel.value;
+  sel.innerHTML = opcoesProdutos();
+  if ([...sel.options].some(o => o.value === v)) sel.value = v;
+  document.getElementById("manual-item").classList.toggle("hidden", sel.value !== "manual");
+
+  document.getElementById("lista-receitas").innerHTML = estado.receitas.length
+    ? estado.receitas.map(r => {
+        const t = totaisItens(r.itens);
+        return `<div class="card"><div class="main">
+            <div class="title">${esc(r.nome)}</div>
+            <div class="meta">${Math.round(t.kcal)} kcal · P ${Math.round(t.p)} g · H ${Math.round(t.h)} g · G ${Math.round(t.g)} g · ${r.itens.length} ingredientes</div>
+          </div>
+          <button class="btn" data-usar="receita:${r.id}" type="button">Adicionar</button>
+          <button class="icon-btn" data-del="receita:${r.id}" aria-label="Apagar">×</button></div>`;
+      }).join("")
+    : `<p class="empty">Ainda sem refeições guardadas. Cria uma para a usares sempre que a comeres.</p>`;
+
+  const rr = document.getElementById("rascunho");
+  if (!rascunho.length) { rr.innerHTML = ""; return; }
+  const tr = totaisItens(rascunho);
+  rr.innerHTML = rascunho.map((it, i) => `<div class="card small"><div class="main">
+        <div class="title">${esc(it.nome)}</div>
+        <div class="meta">${it.gramas} g · ${Math.round(it.kcal)} kcal · P ${Math.round(it.p)} · H ${Math.round(it.h)} · G ${Math.round(it.g)}</div>
+      </div><button class="icon-btn" data-rasc="${i}" type="button" aria-label="Remover">×</button></div>`).join("")
+    + `<p class="meta" style="margin:4px 2px 12px">Total: ${Math.round(tr.kcal)} kcal · P ${Math.round(tr.p)} g · H ${Math.round(tr.h)} g · G ${Math.round(tr.g)} g</p>`;
+}
+
+document.getElementById("btn-nova-receita").onclick = () => {
+  document.getElementById("f-receita").classList.toggle("hidden");
+  renderReceitas();
+};
+
+document.getElementById("sel-produto").onchange = () => renderReceitas();
+
+document.getElementById("btn-add-item").onclick = () => {
+  const f = document.getElementById("f-receita");
+  const sel = document.getElementById("sel-produto").value;
+  const gr = +f.gramas.value;
+  if (!gr) { setStatus("Indica a quantidade em gramas."); return; }
+  let item;
+  if (sel === "manual") {
+    item = { nome: f.m_nome.value.trim() || "Ingrediente", gramas: gr, kcal: +f.m_kcal.value || 0, p: +f.m_p.value || 0, h: +f.m_h.value || 0, g: +f.m_g.value || 0 };
+    f.m_nome.value = ""; f.m_kcal.value = ""; f.m_p.value = ""; f.m_h.value = ""; f.m_g.value = "";
+  } else {
+    const prod = estado.produtos[sel];
+    if (!prod) { setStatus("Escolhe um produto guardado ou Manual."); return; }
+    const k = gr / 100;
+    item = { nome: prod.nome, gramas: gr, kcal: prod.kcal100 * k, p: prod.p100 * k, h: prod.h100 * k, g: prod.g100 * k };
+  }
+  rascunho.push(item);
+  f.gramas.value = "";
+  setStatus("");
+  renderReceitas();
+};
+
+document.getElementById("f-receita").onsubmit = e => {
+  e.preventDefault();
+  if (!rascunho.length) { setStatus("Adiciona pelo menos um ingrediente."); return; }
+  const f = e.target;
+  estado.receitas.push({ id: id(), nome: f.nome.value.trim(), itens: rascunho });
+  rascunho = [];
+  f.reset(); f.classList.add("hidden");
+  setStatus("Refeição guardada. Podes usá-la sempre que quiseres.");
+  renderTudo();
+};
 
 renderTudo();
 </script>
